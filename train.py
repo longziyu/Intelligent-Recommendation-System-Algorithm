@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.tensorboard import SummaryWriter  # 导入 TensorBoard
+import numpy as np
+import matplotlib.pyplot as plt
 
 # 数据准备
 class MovieLensDataset(Dataset):
@@ -91,7 +93,8 @@ for epoch in range(num_epochs):
 # 关闭 SummaryWriter
 writer.close()
 
-# 评分预测
+'''
+# 评分预测示例
 def predict_rating(user_id, movie_id):
     model.eval()
     with torch.no_grad():
@@ -102,3 +105,31 @@ def predict_rating(user_id, movie_id):
 sample_user, sample_movie = 1, 2
 predicted_rating = predict_rating(sample_user, sample_movie)
 print(f'Predicted Rating for user {sample_user} and movie {sample_movie}: {predicted_rating}')
+'''
+
+# 预测评分矩阵
+def predict_matrix(model, num_users, num_movies):
+    matrix = np.zeros((num_users, num_movies))
+    model.eval()
+    with torch.no_grad():
+        for user_id in range(num_users):
+            for movie_id in range(num_movies):
+                prediction = model(torch.tensor([user_id]).long().to(device), torch.tensor([movie_id]).long().to(device))
+                matrix[user_id, movie_id] = prediction.item()
+    return matrix
+
+# 生成预测矩阵
+pred_matrix = predict_matrix(model, 50, 50)
+
+# 绘制热图
+plt.figure(figsize=(10, 8))
+plt.imshow(pred_matrix, cmap='hot', interpolation='nearest')
+plt.colorbar()
+plt.title('User-Movie Rating Predictions')
+plt.xlabel('Movie ID')
+plt.ylabel('User ID')
+plt.show()
+
+# 将预测矩阵保存到文件
+np.savetxt('predicted_ratings_matrix.csv', pred_matrix, delimiter=',')
+
