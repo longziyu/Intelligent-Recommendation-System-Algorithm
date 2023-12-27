@@ -5,3 +5,7 @@
 我使用了 cmap='viridis'。你也可以尝试其他色图，例如 cmap='plasma'、cmap='inferno' 或 cmap='magma'，看看哪种色图最适合你的数据。
 
 训练结束后在终端运行：tensorboard --logdir=runs查看训练情况
+
+实验结果：
+
+![image](https://github.com/longziyu/Intelligent-Recommendation-System-Algorithm/blob/main/predict.png)
