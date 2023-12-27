@@ -8,7 +8,9 @@ from torch.utils.data import Dataset, DataLoader
 # 数据准备
 class MovieLensDataset(Dataset):
     def __init__(self, ratings):
-        self.users, self.movies, self.ratings = ratings['UserID'], ratings['MovieID'], ratings['Rating']
+        self.users = ratings['UserID'].values
+        self.movies = ratings['MovieID'].values
+        self.ratings = ratings['Rating'].values
 
     def __len__(self):
         return len(self.ratings)
@@ -18,6 +20,9 @@ class MovieLensDataset(Dataset):
 
 def load_data():
     ratings = pd.read_csv('path_to_movielens_1m/ratings.dat', sep='::', header=None, names=['UserID', 'MovieID', 'Rating', 'Timestamp'], engine='python')
+    # 将 UserID 和 MovieID 转换为连续整数索引
+    ratings['UserID'] = ratings['UserID'].astype("category").cat.codes
+    ratings['MovieID'] = ratings['MovieID'].astype("category").cat.codes
     return ratings
 
 # 模型定义
