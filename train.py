@@ -4,6 +4,7 @@ import torch.optim as optim
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
+from torch.utils.tensorboard import SummaryWriter  # 导入 TensorBoard
 
 # 数据准备
 class MovieLensDataset(Dataset):
@@ -58,6 +59,7 @@ test_dataset = MovieLensDataset(test_data)
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
+writer = SummaryWriter('runs/movielens_experiment')
 # 训练模型
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = RecommenderNet(num_users, num_movies, embedding_size).to(device)
@@ -67,8 +69,8 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 num_epochs = 5
 for epoch in range(num_epochs):
     model.train()
-    for users, movies, ratings in train_loader:
-        # 将 users 和 movies 转换为 LongTensor
+    total_loss = 0
+    for batch_idx, (users, movies, ratings) in enumerate(train_loader):
         users, movies, ratings = users.long().to(device), movies.long().to(device), ratings.float().to(device)
         
         optimizer.zero_grad()
@@ -76,8 +78,18 @@ for epoch in range(num_epochs):
         loss = criterion(outputs, ratings)
         loss.backward()
         optimizer.step()
-    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
+        total_loss += loss.item()
+
+        # 记录到 TensorBoard
+        if batch_idx % 10 == 0:  # 每 10 个批次记录一次
+            writer.add_scalar('Training Loss', loss.item(), epoch * len(train_loader) + batch_idx)
+
+    average_loss = total_loss / len(train_loader)
+    print(f'Epoch [{epoch+1}/{num_epochs}], Average Loss: {average_loss:.4f}')
+    writer.add_scalar('Average Training Loss per Epoch', average_loss, epoch)
+# 关闭 SummaryWriter
+writer.close()
 
 # 评分预测
 def predict_rating(user_id, movie_id):
