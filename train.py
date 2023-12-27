@@ -68,13 +68,16 @@ num_epochs = 5
 for epoch in range(num_epochs):
     model.train()
     for users, movies, ratings in train_loader:
-        users, movies, ratings = users.to(device), movies.to(device), ratings.to(device)
+        # 将 users 和 movies 转换为 LongTensor
+        users, movies, ratings = users.long().to(device), movies.long().to(device), ratings.float().to(device)
+        
         optimizer.zero_grad()
         outputs = model(users, movies)
-        loss = criterion(outputs, ratings.float())
+        loss = criterion(outputs, ratings)
         loss.backward()
         optimizer.step()
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+
 
 # 评分预测
 def predict_rating(user_id, movie_id):
