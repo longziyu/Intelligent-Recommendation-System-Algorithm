@@ -9,3 +9,8 @@
 实验结果：
 
 ![image](https://github.com/longziyu/Intelligent-Recommendation-System-Algorithm/blob/main/predict.png)
+
+loss曲线如下：
+
+![image](https://github.com/longziyu/Intelligent-Recommendation-System-Algorithm/blob/main/loss.png)
+![image](https://github.com/longziyu/Intelligent-Recommendation-System-Algorithm/blob/main/training_loss.png)
