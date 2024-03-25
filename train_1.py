@@ -1,4 +1,5 @@
 #添加预测分数前五的电影ID作为推荐
+#为用户单独推荐
 def recommend_movies(model, user_id, num_users, num_movies, top_k=5):
     model.eval()  # 设置模型为评估模式
     with torch.no_grad():
@@ -14,3 +15,16 @@ def recommend_movies(model, user_id, num_users, num_movies, top_k=5):
 sample_user_id = 1  # 示例用户ID，可以根据需要更改
 recommended_movie_ids = recommend_movies(model, sample_user_id, num_users, num_movies)
 print(f"Top 5 recommended movie IDs for user {sample_user_id}: {recommended_movie_ids}")
+
+#总体推荐
+# 生成预测矩阵
+pred_matrix = predict_matrix(model, num_users, num_movies)
+
+# 计算所有电影的平均预测评分
+average_ratings = np.mean(pred_matrix, axis=0)
+
+# 找出平均评分最高的五部电影的ID
+top_movie_ids = np.argsort(-average_ratings)[:5]
+
+print(f"Top 5 recommended movie IDs based on average predicted ratings: {top_movie_ids}")
+
