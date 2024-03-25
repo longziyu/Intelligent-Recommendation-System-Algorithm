@@ -14,3 +14,8 @@ loss曲线如下：
 
 ![image](https://github.com/longziyu/Intelligent-Recommendation-System-Algorithm/blob/main/loss.png)
 ![image](https://github.com/longziyu/Intelligent-Recommendation-System-Algorithm/blob/main/training_loss.png)
+
+
+  File "/home/ubuntu/miniconda3/envs/carla/lib/python3.7/site-packages/torch/nn/functional.py", line 2210, in embedding
+    return torch.embedding(weight, input, padding_idx, scale_grad_by_freq, sparse)
+RuntimeError: Expected tensor for argument #1 'indices' to have one of the following scalar types: Long, Int; but got torch.cuda.ShortTensor instead (while checking arguments for embedding)
